@@ -5,11 +5,10 @@
 
 
 
+#include <irrKlang.h>
+using namespace irrklang;
 
-//#include <irrKlang.h>
-//using namespace irrklang;
-
-//ISoundEngine *SoundEngine = createIrrKlangDevice();
+ISoundEngine *SoundEngine = createIrrKlangDevice();
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height), Lives(3)
@@ -35,7 +34,7 @@ void Game::Init()
 
 
     //фоновый звук
-    //SoundEngine->play2D("resources/audio/breakout.mp3", true);
+    SoundEngine->play2D("resources/audio/breakout.mp3", true);
 
     //Загружаем все текстуры
     ResourceManager::LoadTexture("resources/textures/awesomeface.png", true, "face");
@@ -230,10 +229,10 @@ void Game::DoCollisions()
              if(std::get<0>(collision)){
                    if(!box.IsSolid){
                       box.Destroyed = true;
-                    //  SoundEngine->play2D("resources/audio/bleep.mp3", false);
+                      SoundEngine->play2D("resources/audio/bleep.mp3", false);
                    }
                    else{
-                   //   SoundEngine->play2D("resources/audio/solid.wav", false);
+                      SoundEngine->play2D("resources/audio/solid.wav", false);
                    }
                    Direction dir = std::get<1>(collision);
                    glm::vec2 diff_vector  = std::get<2>(collision);

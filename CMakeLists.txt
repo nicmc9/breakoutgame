@@ -14,21 +14,21 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/GLFW)
 
 #find_package(Freetype REQUIRED)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/freetype)
-target_include_directories(Breakout PRIVATE ${FREETYPE_INCLUDE_DIRS})
+#target_include_directories(Breakout PRIVATE ${FREETYPE_INCLUDE_DIRS})
 
 include_directories(${CMAKE_SOURCE_DIR}/external/GLM)
 include_directories(${CMAKE_SOURCE_DIR}/external/GLAD/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/GLFW/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/STB)
 include_directories(${CMAKE_SOURCE_DIR}/external/freetype/include)
-#include_directories(${CMAKE_SOURCE_DIR}/external/irrKlang/include)
+include_directories(${CMAKE_SOURCE_DIR}/external/irrKlang/include)
  
-
-
 target_link_libraries(Breakout  glfw ${GLFW_LIBRARIES} )
 target_link_libraries(Breakout freetype ${FREETYPE_LIBRARIES})
 
-
+if(WIN32)
+    target_link_libraries(Breakout ${CMAKE_SOURCE_DIR}/external/irrKlang/lib/irrKlang.lib)
+endif()
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

@@ -9,6 +9,7 @@
 #include "game_object.h"
 #include "ball_object.h"
 #include "text_renderer.h"
+#include "particle_generator.h"
 
 //основные игровые состояния
 enum GameState {
@@ -29,7 +30,7 @@ enum Direction {
  */
 
 // Начальный размер и скорость лопатки игрока
-const glm::vec2 PLAYER_SIZE(100.0f, 20.0f);
+const glm::vec2 PLAYER_SIZE(150.0f, 20.0f);
 const float PLAYER_VELOCITY = 500.0f;
 
 // начальный размер и скорость шара
@@ -57,6 +58,7 @@ public:
     GameObject      *Player = nullptr;
     BallObject      *Ball = nullptr; 
     TextRenderer    *Text = nullptr;
+    ParticleGenerator   *Particles = nullptr; 
 
 
     ///

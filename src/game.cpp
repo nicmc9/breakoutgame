@@ -21,16 +21,20 @@ Game::~Game()
     delete Player;
     delete Ball;
     delete Text;
+    delete Particles;
 }
 
 void Game::Init()
 {
     Shader sprite_shader = ResourceManager::LoadShader("resources/shaders/sprite.vs", "resources/shaders/sprite.fs", nullptr, "sprite");
+    Shader particle_shader = ResourceManager::LoadShader("resources/shaders/particle.vs", "resources/shaders/particle.fs", nullptr, "particle");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width), static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
     //uniform sampler2D image; индекс в наборе текстур для данного семплера, т.к всегда одна текстура ставим это здесь
     sprite_shader.Use().SetInteger("image", 0);
     //матрица проекции одинаковая для всех спрайтов в игре поэтому ставим здесь
     sprite_shader.SetMatrix4("projection", projection);
+    particle_shader.Use().SetInteger("sprite", 0);
+    particle_shader.SetMatrix4("projection", projection);   
 
 
     //фоновый звук
@@ -42,7 +46,7 @@ void Game::Init()
     ResourceManager::LoadTexture("resources/textures/block.png", false, "block");
     ResourceManager::LoadTexture("resources/textures/block_solid.png", false, "block_solid");
     ResourceManager::LoadTexture("resources/textures/paddle.png", true, "paddle");
-
+    ResourceManager::LoadTexture("resources/textures/particle.png", true, "particle"); 
     //Загружаем все уровни
     GameLevel one; one.Load("resources/levels/one.lvl", this->Width, this->Height / 2);
     GameLevel two; two.Load("resources/levels/two.lvl", this->Width, this->Height / 2);
@@ -65,11 +69,16 @@ void Game::Init()
 
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load("resources/fonts/arial.ttf", 24);
+
+    Particles = new ParticleGenerator( particle_shader, ResourceManager::GetTexture("particle"), 500);
 }
 
 void Game::Update(float dt)
 {
     Ball->Move(dt, this->Width);
+
+    Particles->Update(dt, *Ball, 2, glm::vec2(Ball->Radius / 2.0f));
+
     // проверка всех коллизий
     this->DoCollisions();
 
@@ -170,10 +179,14 @@ void Game::Render()
 
         Player->Draw(*Renderer);
         Ball->Draw(*Renderer);
+          // Отрисовка частиц
+        Particles->Draw();
 
        P_lives.pop_back();
        P_lives.emplace_back(std::to_string(this->Lives));
        Text->RenderText(P_lives , 5.0f, 5.0f, 1.0f);
+
+
     }
 
      if (this->State == GAME_MENU)

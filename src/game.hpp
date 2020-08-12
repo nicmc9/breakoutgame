@@ -10,6 +10,8 @@
 #include "ball_object.h"
 #include "text_renderer.h"
 #include "particle_generator.h"
+#include "post_processor.h"
+#include "power_up.h"
 
 //основные игровые состояния
 enum GameState {
@@ -46,20 +48,22 @@ public:
     bool                    Keys[1024];
     bool                    KeysProcessed[1024]; // Обработка нажатив для меню
     unsigned int            Width, Height;
+    //контейнер бонусов
+    std::vector<PowerUp>  PowerUps;
 
     //контейнер уровней
     std::vector<GameLevel> Levels;
     unsigned int           CurrentLevel;
-
     unsigned int Lives;
+
     //
+
     SpriteRenderer* Renderer = nullptr;
-//игрок отдельно от уровня и это пока обычный игровой объект
     GameObject      *Player = nullptr;
     BallObject      *Ball = nullptr; 
     TextRenderer    *Text = nullptr;
     ParticleGenerator   *Particles = nullptr; 
-
+    PostProcessor   *Effects = nullptr;
 
     ///
     std::vector<std::string> P_lives = {"Ж","и","з","н","е","й",":","0"};
@@ -77,7 +81,10 @@ public:
     void Render();
 
     void DoCollisions();
-
+    //
+    void SpawnPowerUps(GameObject &block);
+    void UpdatePowerUps(float dt);
+    void ActivatePowerUp(PowerUp &powerUp);
     // reset
     void ResetLevel();
     void ResetPlayer();

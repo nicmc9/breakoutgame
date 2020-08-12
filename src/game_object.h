@@ -27,7 +27,7 @@ public:
     float       Rotation;
 
     //состояния игровой логики
-    glm::vec2 Velocity;
+    glm::vec2   Velocity;
     bool        IsSolid;
     bool        Destroyed;
    

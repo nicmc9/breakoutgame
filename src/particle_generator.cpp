@@ -9,19 +9,19 @@ ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture, unsigned 
 
 void ParticleGenerator::Update(float dt, GameObject &object, unsigned int newParticles, glm::vec2 offset)
 {
-    // add new particles 
+    //оживляем новые частицы
     for (unsigned int i = 0; i < newParticles; ++i)
     {
         int unusedParticle = this->firstUnusedParticle();
         this->respawnParticle(this->particles[unusedParticle], object, offset);
     }
-    // update all particles
+    // обновление всех частиц
     for (unsigned int i = 0; i < this->amount; ++i)
     {
         Particle &p = this->particles[i];
-        p.Life -= dt; // reduce life
+        p.Life -= dt; // уменьшаем жизнь частицы
         if (p.Life > 0.0f)
-        {	// particle is alive, thus update
+        {	// для живой частицы меняет прозрачность и немного позицию
             p.Position -= p.Velocity * dt; 
             p.Color.a -= dt * 2.5f;
         }
@@ -31,7 +31,7 @@ void ParticleGenerator::Update(float dt, GameObject &object, unsigned int newPar
 
 void ParticleGenerator::Draw()
 {
-    // use additive blending to give it a 'glow' effect
+    // аддитивное смешивание для сияния( glow) эффекта
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     this->shader.Use();
     for (Particle particle : this->particles)
@@ -46,13 +46,13 @@ void ParticleGenerator::Draw()
             glBindVertexArray(0);
         }
     }
-    // don't forget to reset to default blending mode
+    // не забыть сбросить смешивание
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ParticleGenerator::init()
 {
-    // set up mesh and attribute properties
+    
     unsigned int VBO;
     float particle_quad[] = {
         0.0f, 1.0f, 0.0f, 1.0f,
@@ -66,15 +66,15 @@ void ParticleGenerator::init()
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &VBO);
     glBindVertexArray(this->VAO);
-    // fill mesh buffer
+   
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(particle_quad), particle_quad, GL_STATIC_DRAW);
-    // set mesh attributes
+   
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glBindVertexArray(0);
 
-    // create this->amount default particle instances
+    // инициализируем все объекты частиц сразу в контейнере
     for (unsigned int i = 0; i < this->amount; ++i)
         this->particles.emplace_back(Particle());
 }
@@ -110,7 +110,8 @@ void ParticleGenerator::respawnParticle(Particle &particle, GameObject &object, 
     particle.Position = object.Position + random + offset;
     particle.Color = glm::vec4(rColor, rColor, rColor, 1.0f);
     particle.Life = 1.0f;
-    particle.Velocity = object.Velocity * 0.1f;
+    particle.Velocity = object.Velocity * 0.1f; // уменьшим скорость а то  слишком быстро будут летать
+    
 }
 
 

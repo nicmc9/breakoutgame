@@ -9,9 +9,6 @@
 #include "sprite_renderer.h"
 #include "resource_manager.h"
 
-
-/// GameLevel holds all Tiles as part of a Breakout level and 
-/// hosts functionality to Load/render levels from the harddisk.
 /*
   Контейнер для игровых объектов а именно кирпичей,
   сам загружает информацию с диска и инициализирем игровые объекты

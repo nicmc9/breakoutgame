@@ -17,10 +17,6 @@ struct Particle
     Particle(): Position(0.0f), Velocity(0.0f), Color(1.0f),Life(0.0f){}
 };
 
-// ParticleGenerator acts as a container for rendering a large number of 
-// particles by repeatedly spawning and updating particles and killing 
-// them after a given amount of time.
-
 /*
 Генератор частиц действует как контейнер  для большого количества частиц,
 инициализирует данные OpenGL, а также за уничтожение и оживление частиц
@@ -43,9 +39,8 @@ private:
     Texture2D texture;
     unsigned int VAO;
     void init();
-    //
    
-    // возвращает индекс первой частицв Live <= 0.0f 
+    // возвращает индекс первой частицы Live <= 0.0f 
     unsigned int firstUnusedParticle();
     // возрождение частицы
     void respawnParticle(Particle &particle, GameObject &object, glm::vec2 offset = glm::vec2(0.0f, 0.0f));

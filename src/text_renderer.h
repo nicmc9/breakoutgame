@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <map>
 #include <vector>
 
@@ -22,7 +21,6 @@ struct Character {
     size_t Advance;   // горизонтальное смещение до следующего глифа
 };
 
-
 /*
  Класс загружает шрифт и хранить текстуры и информацию по глифам,
  а также функцию отрисовки
@@ -30,20 +28,15 @@ struct Character {
 class TextRenderer
 {
 public:
-   
+   // контейнер для сохранения предкомпилированных символов
     std::map<std::string, Character> Characters;
-
-   
-  
     Shader TextShader;
-  
-       
     TextRenderer(unsigned int width, unsigned int height);
     
     void Load(std::string font, unsigned int fontSize);
-    // renders a string of text using the precompiled list of characters
+    // Отрисовывает список строк текста использую предкомпилированные текстуры символов
     void RenderText(std::vector<std::string>& phrase, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0f));
 private:
-    // render state
+    // 
     unsigned int VAO, VBO;
 };

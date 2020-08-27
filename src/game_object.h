@@ -7,10 +7,6 @@
 #include "texture.h"
 #include "sprite_renderer.h"
 
-
-// Container object for holding all state relevant for a single
-// game object entity. Each object in the game likely needs the
-// minimal of state as described within GameObject.
 /*
  Контейнер игрового объекта (Актор), содержит все неоходимое для
  отрисовки и управления каждой игровой сущности в игре,
@@ -31,10 +27,10 @@ public:
     bool        IsSolid;
     bool        Destroyed;
    
-    // constructor(s)
+   
     GameObject();
     GameObject(glm::vec2 pos, glm::vec2 size, Texture2D sprite, glm::vec3 color = glm::vec3(1.0f), glm::vec2 velocity = glm::vec2(0.0f, 0.0f));
     
-    //содержит функцию отрисовки т.е. управляет своим рисование
+    //содержит функцию отрисовки т.е. управляет своим рисованием
     virtual void Draw(SpriteRenderer &renderer);
 };

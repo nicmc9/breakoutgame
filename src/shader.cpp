@@ -1,5 +1,4 @@
 #include "shader.h"
-
 #include <iostream>
 
 Shader& Shader::Use()
@@ -11,13 +10,12 @@ Shader& Shader::Use()
 void Shader::Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource)
 {
     unsigned int sVertex, sFragment, gShader;
-    // vertex Shader
- 
-    sVertex = glCreateShader(GL_VERTEX_SHADER);
+    // вершинный Шейдер
+     sVertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(sVertex, 1, &vertexSource, NULL);
     glCompileShader(sVertex);
     checkCompileErrors(sVertex, "VERTEX");
-    // fragment Shader
+    // фрагментный Шейдер
     sFragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(sFragment, 1, &fragmentSource, NULL);
     glCompileShader(sFragment);
@@ -30,7 +28,7 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
         glCompileShader(gShader);
         checkCompileErrors(gShader, "GEOMETRY");
     }
-    // shader program
+    // шейдерная программа
     this->ID = glCreateProgram();
     glAttachShader(this->ID, sVertex);
     glAttachShader(this->ID, sFragment);
@@ -99,7 +97,6 @@ void Shader::SetMatrix4(const char* name, const glm::mat4& matrix, bool useShade
         this->Use();
     glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
 }
-
 
 void Shader::checkCompileErrors(unsigned int object, std::string type)
 {

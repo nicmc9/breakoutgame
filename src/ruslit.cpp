@@ -1,9 +1,11 @@
 ﻿#include "ruslit.h"
 
-void fill_symbols(std::map<std::string,int>& rus_lit){
-     
+/*
+Контейнер unicode Значений для используемых символов
 
-//
+*/
+void fill_symbols(std::map<std::string,int>& rus_lit){
+
          rus_lit.insert({u8"A", 0x0041});
          rus_lit.insert({u8"B", 0x0042});  
          rus_lit.insert({u8"C", 0x0043});  

@@ -59,20 +59,15 @@ int main()
     float lastFrame = 0.0f;
 
   
-
     while (!glfwWindowShouldClose(window))
     {
-      
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         glfwPollEvents();
-     
         Breakout.ProcessInput(deltaTime);
-       
         Breakout.Update(deltaTime);
 
-     
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         Breakout.Render();
@@ -89,7 +84,8 @@ int main()
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
+    
+    //Когда пользователь нажимает ESK закрываем окно программы
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (key >= 0 && key < 1024)
@@ -105,7 +101,5 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
+   glViewport(0, 0, width, height);
 }

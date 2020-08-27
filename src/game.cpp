@@ -97,14 +97,15 @@ void Game::Update(float dt)
     this->DoCollisions();
 
     Particles->Update(dt, *Ball, 2, glm::vec2(Ball->Radius / 2.0f));
-  // update PowerUps
+  // обновить состояния бонусов
     this->UpdatePowerUps(dt);
    
 
-     if (Ball->Position.y >= this->Height) // did ball reach bottom edge?
+     if (Ball->Position.y >= this->Height) // достил ли мяч нижней границы
     {
         --this->Lives;
-        // did the player lose all his lives? : Game over
+    
+        //кончились жизни ? игра закончена
         if (this->Lives == 0)
         {
             this->ResetLevel();
@@ -160,8 +161,7 @@ if (this->State == GAME_MENU)
 if (this->State == GAME_ACTIVE)
     {
         float velocity = PLAYER_VELOCITY * dt;
-        //std::cout<<"velocity paddle == "<<velocity<<'\n';
-        // move playerboard
+      
         if (this->Keys[GLFW_KEY_A])
         {
             if (Player->Position.x >= 0.0f){
@@ -186,8 +186,8 @@ if (this->State == GAME_WIN)
     {
         if (this->Keys[GLFW_KEY_ENTER])
         {
-            this->KeysProcessed[GLFW_KEY_ENTER] = true; //Иноче сразу запустит уровень 
-            //Effects->Chaos = false;
+            this->KeysProcessed[GLFW_KEY_ENTER] = true; //Иначе сразу запустит уровень 
+            Effects->Chaos = false;
             this->State = GAME_MENU;
         }
     }    
@@ -205,12 +205,12 @@ void Game::Render()
 
        Player->Draw(*Renderer);
        Ball->Draw(*Renderer);
-        // draw PowerUps
+      //отрисовка бонусов
             for (PowerUp &powerUp : this->PowerUps)
                 if (!powerUp.Destroyed)
                     powerUp.Draw(*Renderer);
 
-          // Отрисовка частиц
+       // Отрисовка частиц
        Particles->Draw();
               
        Effects->EndRender();
@@ -252,13 +252,14 @@ void Game::ResetLevel()
 
 void Game::ResetPlayer()
 {
-    // reset player/ball stats
+    
+    //Сброс состояний игрока и мяча
     Player->Size = PLAYER_SIZE;
     Player->Position = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
     Ball->Reset(Player->Position + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS, -(BALL_RADIUS * 2.0f)), INITIAL_BALL_VELOCITY);
 }
 
-// collision detection
+// Определение столкновений
 bool CheckCollision(GameObject &one, GameObject &two);
 Collision CheckCollision(BallObject &one, GameObject &two);
 Direction VectorDirection(glm::vec2 closest);
@@ -279,15 +280,15 @@ void Game::DoCollisions()
                       SoundEngine->play2D("resources/audio/bleep.mp3", false);
                    }
                    else{
-                        // if block is solid, enable shake effect
+                        // Если блок твердый активируем эффект ненадолго
                       ShakeTime = 0.05f;
-                     
                       Effects->Shake= true;
                       SoundEngine->play2D("resources/audio/solid.wav", false);
                    }
                    Direction dir = std::get<1>(collision);
                    glm::vec2 diff_vector  = std::get<2>(collision);
-                      if (!(Ball->PassThrough && !box.IsSolid)) // don't do collision resolution on non-solid bricks if pass-through is activated
+                   //не производим разрешение столкновений если активирован бонус pass-through и блок не твердый
+                  if (!(Ball->PassThrough && !box.IsSolid)) 
                 {
                    if(dir == LEFT || dir == RIGHT)
                    {
@@ -312,17 +313,20 @@ void Game::DoCollisions()
             }
         }
     }
-  // also check collisions on PowerUps and if so, activate them
+  
+  //Добавляем проверку столкновений между игроком и Бонусами
     for (PowerUp &powerUp : this->PowerUps)
     {
         if (!powerUp.Destroyed)
         {
-            // first check if powerup passed bottom edge, if so: keep as inactive and destroy
+            
+            //Если бонус достиг нижней границы уничтожаем его
             if (powerUp.Position.y >= this->Height)
                 powerUp.Destroyed = true;
 
             if (CheckCollision(*Player, powerUp))
-            {	// collided with player, now activate powerup
+            {	
+                //если игрок столкнулся с бонусом то его удаляем, но при этом активируем эффект
                 ActivatePowerUp(powerUp);
                 powerUp.Destroyed = true;
                 powerUp.Activated = true;
@@ -333,18 +337,18 @@ void Game::DoCollisions()
     Collision result = CheckCollision(*Ball, *Player);
     if (!Ball->Stuck && std::get<0>(result))
     {
-        // check where it hit the board, and change velocity based on where it hit the board
+        //проверяем в каком месте лопатки ударился мяч и в зависимости от этого меняем скорость
         float centerBoard = Player->Position.x + Player->Size.x / 2.0f;
         float distance = (Ball->Position.x + Ball->Radius) - centerBoard;
         float percentage = distance / (Player->Size.x / 2.0f);
-        // then move accordingly
+     
         float strength = 2.0f;
         glm::vec2 oldVelocity = Ball->Velocity;
         Ball->Velocity.x = INITIAL_BALL_VELOCITY.x * percentage * strength; 
         Ball->Velocity.y = -1.0f * abs(Ball->Velocity.y);  
         Ball->Velocity = glm::normalize(Ball->Velocity) * glm::length(oldVelocity);
-
-          // if Sticky powerup is activated, also stick ball to paddle once new velocity vectors were calculated
+      
+        //Когда бонус липкости активировант , мы меняем состояние меча на стационарное
         Ball->Stuck = Ball->Sticky;
 
         SoundEngine->play2D("resources/audio/bleep.wav", false);
@@ -357,7 +361,6 @@ void Game::DoCollisions()
 bool CheckCollision(GameObject& one, GameObject& two){
 
     // collision x -axis?
-
     bool collisionX = one.Position.x + one.Size.x >= two.Position.x  && two.Position.x + two.Size.x >=one.Position.x;
     //collison  y - axis? 
     bool collisionY = one.Position.y + one.Size.y >= two.Position.y && two.Position.y + two.Size.y >= one.Position.y;
@@ -367,20 +370,20 @@ bool CheckCollision(GameObject& one, GameObject& two){
 
 Collision CheckCollision(BallObject &one, GameObject &two) // AABB - Circle collision
 {
-    // get center point circle first 
+    //получить точку центра мяча
     glm::vec2 center(one.Position + one.Radius);
-    // calculate AABB info (center, half-extents)
+    // Вычислим информацию о квадрате (центр, и половинные размеры )
     glm::vec2 aabb_half_extents(two.Size.x / 2.0f, two.Size.y / 2.0f);
     glm::vec2 aabb_center(
         two.Position.x + aabb_half_extents.x, 
         two.Position.y + aabb_half_extents.y
     );
-    // get difference vector between both centers
+    // получить вектор разницы между центрами
     glm::vec2 difference = center - aabb_center;
     glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-    // add clamped value to AABB_center and we get the value of box closest to circle
-    glm::vec2 closest = aabb_center + clamped;
-    // retrieve vector between center circle and closest point AABB and check if length <= radius
+    //добавляем фиксированное значение к AABB_center, и мы получаем значение прямоугольника, ближайшего к кругу
+     glm::vec2 closest = aabb_center + clamped;
+    //получить вектор между центральным кругом и ближайшей точкой AABB и проверить, если длина <= радиус то имеем столкновение
     difference = closest - center;
     if(glm::length(difference) <= one.Radius)
         return std::make_tuple(true, VectorDirection(difference), difference);
@@ -411,7 +414,7 @@ Direction VectorDirection(glm::vec2 target)
     return (Direction)best_match;
 }    
 
-// powerups
+// Бонусы
 bool IsOtherPowerUpActive(std::vector<PowerUp> &powerUps, std::string type);
 
 void Game::UpdatePowerUps(float dt)
@@ -425,13 +428,14 @@ void Game::UpdatePowerUps(float dt)
 
             if (powerUp.Duration <= 0.0f)
             {
-                // remove powerup from list (will later be removed)
+                //убрать бонус из списка(позже будет удален)
                 powerUp.Activated = false;
-                // deactivate effects
+                // убрать эффекты
                 if (powerUp.Type == "sticky")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "sticky"))
-                    {	// only reset if no other PowerUp of type sticky is active
+                    {	// убираем эффект только после проверки, на активность других аналогичных эффектов
+                        // как бы складываем их длительность
                         Ball->Sticky = false;
                         Player->Color = glm::vec3(1.0f);
                     }
@@ -439,7 +443,7 @@ void Game::UpdatePowerUps(float dt)
                 else if (powerUp.Type == "pass-through")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "pass-through"))
-                    {	// only reset if no other PowerUp of type pass-through is active
+                    {	
                         Ball->PassThrough = false;
                         Ball->Color = glm::vec3(1.0f);
                     }
@@ -447,22 +451,22 @@ void Game::UpdatePowerUps(float dt)
                 else if (powerUp.Type == "confuse")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "confuse"))
-                    {	// only reset if no other PowerUp of type confuse is active
+                    {	
                         Effects->Confuse = false;
                     }
                 }
                 else if (powerUp.Type == "chaos")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "chaos"))
-                    {	// only reset if no other PowerUp of type chaos is active
+                    {	
                         Effects->Chaos = false;
                     }
                 }
             }
         }
     }
-    // Remove all PowerUps from vector that are destroyed AND !activated (thus either off the map or finished)
-    // Note we use a lambda expression to remove each PowerUp which is destroyed and not activated
+
+    // Удаляем все Бонусы из контейнера, которые были уничтожены И неАктивированы 
     this->PowerUps.erase(std::remove_if(this->PowerUps.begin(), this->PowerUps.end(),
         [](const PowerUp &powerUp) { return powerUp.Destroyed && !powerUp.Activated; }
     ), this->PowerUps.end());
@@ -475,7 +479,7 @@ bool ShouldSpawn(unsigned int chance)
 }
 void Game::SpawnPowerUps(GameObject &block)
 {
-    if (ShouldSpawn(75)) // 1 in 75 chance
+    if (ShouldSpawn(75)) // Шанс 1 к 75 
         this->PowerUps.push_back(PowerUp("speed", glm::vec3(0.5f, 0.5f, 1.0f), 0.0f, block.Position, ResourceManager::GetTexture("powerup_speed")));
     if (ShouldSpawn(75))
         this->PowerUps.push_back(PowerUp("sticky", glm::vec3(1.0f, 0.5f, 1.0f), 20.0f, block.Position, ResourceManager::GetTexture("powerup_sticky")));
@@ -483,7 +487,7 @@ void Game::SpawnPowerUps(GameObject &block)
         this->PowerUps.push_back(PowerUp("pass-through", glm::vec3(0.5f, 1.0f, 0.5f), 10.0f, block.Position, ResourceManager::GetTexture("powerup_passthrough")));
     if (ShouldSpawn(75))
         this->PowerUps.push_back(PowerUp("pad-size-increase", glm::vec3(1.0f, 0.6f, 0.4), 0.0f, block.Position, ResourceManager::GetTexture("powerup_increase")));
-    if (ShouldSpawn(15)) // Negative powerups should spawn more often
+    if (ShouldSpawn(15)) // Негативные эффекты должны появлятся чаще
         this->PowerUps.push_back(PowerUp("confuse", glm::vec3(1.0f, 0.3f, 0.3f), 15.0f, block.Position, ResourceManager::GetTexture("powerup_confuse")));
     if (ShouldSpawn(15))
         this->PowerUps.push_back(PowerUp("chaos", glm::vec3(0.9f, 0.25f, 0.25f), 15.0f, block.Position, ResourceManager::GetTexture("powerup_chaos")));
@@ -512,7 +516,7 @@ void Game::ActivatePowerUp(PowerUp &powerUp)
     else if (powerUp.Type == "confuse")
     {
         if (!Effects->Chaos)
-            Effects->Confuse = true; // only activate if chaos wasn't already active
+            Effects->Confuse = true; 
     }
     else if (powerUp.Type == "chaos")
     {
@@ -523,8 +527,9 @@ void Game::ActivatePowerUp(PowerUp &powerUp)
 
 bool IsOtherPowerUpActive(std::vector<PowerUp> &powerUps, std::string type)
 {
-    // Check if another PowerUp of the same type is still active
-    // in which case we don't disable its effect (yet)
+  // Проверяем, активен ли еще один Бонус того же типа
+  // в этом случае мы не отключаем его действие (пока)
+    
     for (const PowerUp &powerUp : powerUps)
     {
         if (powerUp.Activated)

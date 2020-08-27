@@ -6,9 +6,9 @@
 
 void GameLevel::Load(const char *file, unsigned int levelWidth, unsigned int levelHeight)
 {
-    // clear old data
+   
     this->Bricks.clear();
-    // load from file
+    // загрузка из файла
     unsigned int tileCode;
     GameLevel level;
     std::string line;
@@ -16,11 +16,11 @@ void GameLevel::Load(const char *file, unsigned int levelWidth, unsigned int lev
     std::vector<std::vector<unsigned int>> tileData;
     if (fstream)
     {
-        while (std::getline(fstream, line)) // read each line from level file
+        while (std::getline(fstream, line)) // читаем по линиям из файла уровня
         {
             std::istringstream sstream(line);
             std::vector<unsigned int> row;
-            while (sstream >> tileCode) // read each word seperated by spaces
+            while (sstream >> tileCode) // читаем каждое слово разделенное пробелами
                 row.push_back(tileCode);
             tileData.push_back(row);
         }
@@ -48,7 +48,7 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
 {
     // Вычисляем размерность кирпичей в зависимости от размера экрана и их количества
     size_t height = tileData.size();
-    size_t width = tileData[0].size(); // note we can index vector at [0] since this function is only called if height > 0
+    size_t width = tileData[0].size(); // мы можем индексировать вектор в [0], так как эта функция вызывается только если высота > 0
     float unit_width = levelWidth / static_cast<float>(width);
     float unit_height = levelHeight / static_cast<float>(height); 
    	
@@ -62,7 +62,7 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
                 glm::vec2 pos(unit_width * x, unit_height * y);
                 glm::vec2 size(unit_width, unit_height);
                 GameObject obj(pos, size, ResourceManager::GetTexture("block_solid"), glm::vec3(0.8f, 0.8f, 0.7f));
-                obj.IsSolid = true; //!
+                obj.IsSolid = true; 
                 this->Bricks.push_back(obj);
             }
             else if (tileData[y][x] > 1)	// не твердый номер теперь означает цвет

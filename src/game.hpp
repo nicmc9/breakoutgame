@@ -65,11 +65,11 @@ public:
     ParticleGenerator   *Particles = nullptr; 
     PostProcessor   *Effects = nullptr;
 
-    ///
+    /// Контейнеры для строк на русском языке
     std::vector<std::string> P_lives = {"Ж","и","з","н","е","й",":","0"};
     std::vector<std::string> P_start = {"Н","а","ж","м","и","т","е"," ", "В","В","О","Д"," ","д","л","я"," ","с","т","а","р","т","а"};
     std::vector<std::string> P_press = {"W"," ","и","л","и"," ","S"," ","п","о","м","е","н","я","т","ь"," ","у","р","о","в","е","н","ь"}; 
-    std::vector<std::string> P_win = {"П","О ","Б","Е","Д","А","!","!","!"}; 
+    std::vector<std::string> P_win = {"П","О","Б","Е","Д","А","!","!","!"}; 
     std::vector<std::string> P_winpress = {"В","В","О","Д"," ","п","р","о","д","о","л","ж","и","т","ь",","," ","E","S","C"," ","в","ы","х","о","д"};
     Game(unsigned int width, unsigned int height);
     ~Game();
@@ -85,7 +85,7 @@ public:
     void SpawnPowerUps(GameObject &block);
     void UpdatePowerUps(float dt);
     void ActivatePowerUp(PowerUp &powerUp);
-    // reset
+    // сброс параметров 
     void ResetLevel();
     void ResetPlayer();
 };

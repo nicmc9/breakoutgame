@@ -1,20 +1,18 @@
 #include <iostream>
 
 #include <glm/gtc/matrix_transform.hpp>
-
-
 #include "text_renderer.h"
 #include "resource_manager.h"
 
 
 TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 {
-    // load and configure shader
+    // Загрузка и конфигурация шейдера для рендера текста
     this->TextShader = ResourceManager::LoadShader("resources/shaders/text_2d.vs", "resources/shaders/text_2d.fs", nullptr, "text");
     this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
     this->TextShader.SetInteger("text", 0);
     
-    // configure VAO/VBO for texture quads
+    // конфигурация вершинных буферов
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
     glBindVertexArray(this->VAO);
@@ -99,25 +97,23 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
 
 void TextRenderer::RenderText(std::vector<std::string>& phrase, float x, float y, float scale, glm::vec3 color)
 {
-    // activate corresponding render state	
+     //активируем состояния рендера	
     this->TextShader.Use();
     this->TextShader.SetVector3f("textColor", color);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(this->VAO);
 
-    // iterate through all unicode characters(string)
-   
+    //Проходим по контейнеру строк (для русских символов сложнее)
        for (auto str = phrase.begin(); str != phrase.end(); str++) 
     {
         Character ch = Characters[*str];
-
         float xpos = x + ch.Bearing.x * scale;
-       // float ypos = y + (this->Characters['H'].Bearing.y - ch.Bearing.y) * scale;
+        // горизонталь проавильно выравниваеться по метрикам большой буквы
         float ypos = y + (this->Characters["Ж"].Bearing.y - ch.Bearing.y) * scale;
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
-        // update VBO for each character
-        float vertices[6][4] = {
+        // обновляем VBO для каждого символа GL_DYNAMIC_DRAW
+        float vertices[6][4] =   {
             { xpos,     ypos + h,   0.0f, 1.0f },
             { xpos + w, ypos,       1.0f, 0.0f },
             { xpos,     ypos,       0.0f, 0.0f },
@@ -126,16 +122,18 @@ void TextRenderer::RenderText(std::vector<std::string>& phrase, float x, float y
             { xpos + w, ypos + h,   1.0f, 1.0f },
             { xpos + w, ypos,       1.0f, 0.0f }
         };
-        // render glyph texture over quad
+        // отрисовываем текстуру глифа на квадрате
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        // update content of VBO memory
+        // обновляем содержимое в памяти
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+        // обязательно используем glBufferSubData, а не glBufferData
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // render quad
+        // рисуем квадрат
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        // now advance cursors for next glyph
-        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
+        // теперь переместите курсоры для следующего глифа
+        // битовый сдвиг на 6, чтобы получить значение в пикселях (1/64 раз 2 ^ 6 = 64)
+        x += (ch.Advance >> 6) * scale; 
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

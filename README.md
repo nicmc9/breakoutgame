@@ -15,7 +15,7 @@ The following techniques were used in the program
    - Post-processing textures
    - Collision handling
 
-[![N|Game](https://drive.google.com/file/d/1Iv46XIehQh02072gV7veHgXbyI04OY9r/view?usp=sharing)]
+![Game Menu](https://i.ibb.co/Dg14m1R/breakoutgame.png)
 
 ### Tech
 

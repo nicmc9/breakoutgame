@@ -17,9 +17,19 @@ The following techniques were used in the program
 
 ![Game Menu](https://i.ibb.co/Dg14m1R/breakoutgame.png)
 
-### Tech
 
+
+# Gameplay video 
+
+[YouTube video](https://youtu.be/tTQtHvbISUQ)
+
+
+### Tech
+* C++ 17
 * [OpenGL] - graphics library !
+* [GLAD] - OpenGL extention library
+* [GLFW] - Windows library
+* [STB] -  image load library
 * [GLM] - OpenGL Mathematics (GLM) is a header only C++ mathematics library for graphics software
 * [FreeType] - FreeType is a freely available software library to render fonts.
 * [irrKlang] - irrKlang is a cross platform sound library for C++, C# and all .NET languages.
@@ -37,8 +47,9 @@ MIT
 
 **Free Software**
 
-
-
+   [GLAD] : <https://glad.dav1d.de/>
+   [GLFW] : <https://www.glfw.org/>
+   [STB]  : <>
    [OpenGL]: <https://www.opengl.org/>
    [FreeType]: <https://www.freetype.org>
    [irrKlang]: <https://www.ambiera.com/irrklang/>
